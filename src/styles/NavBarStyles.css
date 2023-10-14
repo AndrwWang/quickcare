@@ -1,0 +1,23 @@
+.navbar {
+    background-color: white;
+    color: black;
+    height: 10vh;
+    display: flex;
+    flex-direction: row;
+}
+
+.logo {
+
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trailer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
