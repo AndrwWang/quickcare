@@ -5,6 +5,7 @@ import '../styles/style.css'
 import HospitalMarker from './HospitalMarker'
 import LocationMarker from './LocationMarker'
 import { Typography } from '@mui/material';
+import SearchBar from './SearchBar';
 
 export default function Map({ minHeight }) {
   const MAPS_API_KEY = "AIzaSyCaE9RH_1va56W_XJ9HzdWC6h-ufMH7DZQ";
@@ -28,17 +29,22 @@ export default function Map({ minHeight }) {
 	const mapRef = useRef(null)
   const mapsRef = useRef(null)
   const directionsUtil = useRef(null)
+  const autocompleteService = useRef(null);
+  const geocoder = useRef(null);
+
   const userLocation = useRef(null)
+  const searchValue = useRef('')
 	const [mapBounds, setMapBounds] = useState({})
   const [travelTime, setTravelTime] = useState(0)
   const [markers, setMarkers] = useState([]);
+  const [autocompleteResults, setAutocompleteResults] = useState([]);
 
 	/**
 	 * @description This function is called when the map is ready
 	 * @param {Object} map - reference to the map instance
 	 * @param {Object} maps - reference to the maps library
 	 */
-	const onGoogleApiLoaded = ({ map, maps }) => {
+	const onGoogleApiLoaded = async ({ map, maps }) => {
     setMarkers([
       {
         lat: PIEDMONT_ATHENS.lat,
@@ -48,6 +54,8 @@ export default function Map({ minHeight }) {
     ]);
 		mapRef.current = map
     mapsRef.current = maps
+    autocompleteService.current = new mapsRef.current.places.AutocompleteService();
+    geocoder.current = new mapsRef.current.Geocoder();
 
     const serv = new mapsRef.current.DirectionsService();
     const rend = new mapsRef.current.DirectionsRenderer({
@@ -87,7 +95,7 @@ export default function Map({ minHeight }) {
     }
   }
 
-  function queryRoutesAPI(destination) {
+  function queryRoutesAPI(start, destination) {
     const url = 'https://routes.googleapis.com/directions/v2:computeRoutes';
 
     const headers = {
@@ -99,7 +107,7 @@ export default function Map({ minHeight }) {
     const requestBody = {
       origin: {
         location: {
-          latLng: userLocation.current,
+          latLng: start,
         },
       },
       destination: {
@@ -139,14 +147,14 @@ export default function Map({ minHeight }) {
     });
   }
 
-  function calculateAndDisplayRoute(destination) {
+  function calculateAndDisplayRoute(start, destination) {
     const directionsService = directionsUtil.current.service;
     const directionsRenderer = directionsUtil.current.renderer;
     directionsService
       .route({
         origin: {
-          lat: userLocation.current.latitude,
-          lng: userLocation.current.longitude
+          lat: start.latitude,
+          lng: start.longitude
         },
         destination: {
           lat: destination.latitude,
@@ -160,12 +168,6 @@ export default function Map({ minHeight }) {
       })
       .then((response) => {
         directionsRenderer.setDirections(response);
-        console.log(userLocation.current);
-        console.log(userLocation.current.latitude);
-        console.log(userLocation.current.longitude);
-        console.log(destination);
-        console.log(destination.latitude);
-        console.log(destination.longitude);
         setMarkers([
           ...markers,
           {
@@ -176,10 +178,10 @@ export default function Map({ minHeight }) {
           {
             lat: destination.latitude,
             lng: destination.longitude,
-            //isHospital: true
+            isHospital: true
           }
         ])
-        queryRoutesAPI(destination).then((duration) => {
+        queryRoutesAPI(start, destination).then((duration) => {
           console.log('Success! Duration found')
           setTravelTime(duration);
         })
@@ -191,11 +193,27 @@ export default function Map({ minHeight }) {
       .catch((e) => window.alert("Directions request failed: " + e));
   }
   
-	// eslint-disable-next-line no-unused-vars
 	const onMarkerClick = (e, location) => {
     console.log('marker clicked!');
-		calculateAndDisplayRoute(location);
+		calculateAndDisplayRoute(userLocation.current, location);
 	}
+
+  // location selected in autocomplete dropdown menu
+  const onLocationSelect = (e) => {
+    const placeID = e.target.id;
+    geocoder.current.geocode({ placeId: placeID })
+    .then(({ results }) => {
+      const start = {
+        latitude: results[0].geometry.location.lat(),
+        longitude: results[0].geometry.location.lng()
+      };
+      calculateAndDisplayRoute(start, {
+        latitude: PIEDMONT_ATHENS.lat,
+        longitude: PIEDMONT_ATHENS.lng
+      });
+    })
+    .catch((e) => window.alert("Geocoder failed due to: " + e));
+  }
 
 	const onMapChange = ({ bounds, zoom }) => {
 		const ne = bounds.getNorthEast()
@@ -204,11 +222,40 @@ export default function Map({ minHeight }) {
 		setMapBounds({ ...mapBounds, bounds: [sw.lng(), sw.lat(), ne.lng(), ne.lat()], zoom })
 	}
 
+  const searchUpdated = async (e) => {
+    const newSearch = e.target.value;
+    console.log('new value: ' + newSearch);
+    autocompleteService.current.getPlacePredictions({
+      input: newSearch
+    })
+    .then((response) => {
+      const predictions = response.predictions;
+      let newPredictions = [];
+      for (var i = 0; i < predictions.length; i++) {
+        console.log(predictions[i]);
+        newPredictions.push({
+          text: predictions[i].description,
+          placeID: predictions[i].place_id
+        })
+      }
+      setAutocompleteResults(newPredictions);
+    })
+    .catch((error) => {
+      console.error("Error fetching place predictions:", error);
+    });
+  }
+
 	return (
 			<div className="map-container">
         <Typography>
           Travel Time: {travelTime / 3600} hours
         </Typography>
+        <SearchBar
+          valueRef={searchValue}
+          onChange={searchUpdated}
+          autocompleteOptions={autocompleteResults}
+          onLocationSelect={onLocationSelect}
+        />
 				<GoogleMap
 					apiKey={MAPS_API_KEY}
 					defaultCenter={ATLANTA}

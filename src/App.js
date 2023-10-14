@@ -2,10 +2,10 @@ import Map from './components/Map'
 import NavBar from './components/NavBar';
 
 const App = () => {
-	return <div>
+	return <div style={{height: '100vh'}}>
 		<NavBar />
 		<Map minHeight="85vh"/>
-		</div>;
+	</div>;
 }
 
 export default App

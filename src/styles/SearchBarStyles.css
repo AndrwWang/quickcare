@@ -1,0 +1,12 @@
+.search-bar {
+    position: absolute;
+    height: 8vh;
+    top: 8vh;
+    left: 40vw;
+    right: 40vw;
+    z-index: 1;
+}
+
+.autocomplete-menu {
+    background-color: white;
+}
