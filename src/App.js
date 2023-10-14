@@ -4,7 +4,7 @@ import NavBar from './components/NavBar';
 const App = () => {
 	return <div>
 		<NavBar />
-		<Map />
+		<Map minHeight="85vh"/>
 		</div>;
 }
 

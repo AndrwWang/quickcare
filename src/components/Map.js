@@ -5,7 +5,7 @@ import '../styles/style.css'
 import HospitalMarker from './HospitalMarker'
 import { Typography } from '@mui/material';
 
-export default function Map() {
+export default function Map({ minHeight }) {
   const MAPS_API_KEY = "AIzaSyCaE9RH_1va56W_XJ9HzdWC6h-ufMH7DZQ";
   const ROUTES_API_KEY = "AIzaSyAwD84G84lq3_xFmARY1p0ve9DrANs_cv8";
   const ATLANTA = {
@@ -17,14 +17,20 @@ export default function Map() {
     lng: -83.3576 // just athens
   }
 
+  // the style of the route line
+  const polylineOptions = {
+    strokeColor: '#FF0000',
+    strokeOpacity: 0.5,
+    strokeWeight: 10
+  };
+
 	const mapRef = useRef(null)
   const mapsRef = useRef(null)
   const directionsUtil = useRef(null)
   const userLocation = useRef(null)
-	const [mapReady, setMapReady] = useState(false)
 	const [mapBounds, setMapBounds] = useState({})
-	const [highlighted, setHighlighted] = useState(null)
   const [travelTime, setTravelTime] = useState(0)
+  const [markers, setMarkers] = useState([]);
 
 	/**
 	 * @description This function is called when the map is ready
@@ -32,11 +38,18 @@ export default function Map() {
 	 * @param {Object} maps - reference to the maps library
 	 */
 	const onGoogleApiLoaded = ({ map, maps }) => {
+    setMarkers([
+      PIEDMONT_ATHENS
+    ]);
 		mapRef.current = map
     mapsRef.current = maps
 
     const serv = new mapsRef.current.DirectionsService();
-    const rend = new mapsRef.current.DirectionsRenderer();
+    const rend = new mapsRef.current.DirectionsRenderer({
+      polylineOptions: new mapsRef.current.Polyline(polylineOptions),
+      suppressMarkers: true
+    });
+    
     rend.setMap(map);
     directionsUtil.current = {
       service: serv,
@@ -44,7 +57,6 @@ export default function Map() {
     }
     
     getSetUserLoc()
-		setMapReady(true)
 	}
 
   function getSetUserLoc() {
@@ -55,11 +67,6 @@ export default function Map() {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-
-          // infoWindow.setPosition(pos);
-          // infoWindow.setContent("Location found.");
-          // infoWindow.open(map);
-          // map.setCenter(pos);
           console.log('response received from geolocation!')
           userLocation.current = {
             latitude: pos.lat,
@@ -130,7 +137,6 @@ export default function Map() {
   function calculateAndDisplayRoute(destination) {
     const directionsService = directionsUtil.current.service;
     const directionsRenderer = directionsUtil.current.renderer;
-    console.log(mapsRef.current.TrafficModel.PESSIMISTIC);
     directionsService
       .route({
         origin: {
@@ -148,11 +154,24 @@ export default function Map() {
         }
       })
       .then((response) => {
-        // // travel time is returned in seconds
-        // console.log(response.routes);
-        // setTravelTime(response.routes[0].legs[0].duration.value);
-        // console.log('response received from directionService!')
         directionsRenderer.setDirections(response);
+        console.log(userLocation.current);
+        console.log(userLocation.current.latitude);
+        console.log(userLocation.current.longitude);
+        console.log(destination);
+        console.log(destination.latitude);
+        console.log(destination.longitude);
+        setMarkers([
+          ...markers,
+          {
+            lat: userLocation.current.latitude,
+            lng: userLocation.current.longitude
+          },
+          {
+            lat: destination.latitude,
+            lng: destination.longitude
+          }
+        ])
         queryRoutesAPI(destination).then((duration) => {
           console.log('Success! Duration found')
           setTravelTime(duration);
@@ -167,9 +186,7 @@ export default function Map() {
   
 	// eslint-disable-next-line no-unused-vars
 	const onMarkerClick = (e, location) => {
-    console.log('clicked!');
-    console.log(location);
-    console.log(userLocation.current);
+    console.log('marker clicked!');
 		calculateAndDisplayRoute(location);
 	}
 
@@ -178,7 +195,6 @@ export default function Map() {
 		const sw = bounds.getSouthWest()
 
 		setMapBounds({ ...mapBounds, bounds: [sw.lng(), sw.lat(), ne.lng(), ne.lat()], zoom })
-		setHighlighted(null)
 	}
 
 	return (
@@ -191,15 +207,17 @@ export default function Map() {
 					defaultCenter={ATLANTA}
 					defaultZoom={12}
 					options={mapOptions}
-					mapMinHeight="100vh"
 					onGoogleApiLoaded={onGoogleApiLoaded}
 					onChange={onMapChange}
+          mapMinHeight={minHeight}
 				>
-					<HospitalMarker
-						lat={PIEDMONT_ATHENS.lat}
-						lng={PIEDMONT_ATHENS.lng}
-            onClick={onMarkerClick}
-					/>
+          {markers.map((marker, i) => {
+            return <HospitalMarker
+              lat={marker.lat}
+              lng={marker.lng}
+              onClick={onMarkerClick}
+					  />
+          })}
 				</GoogleMap>
 			</div>
 	)

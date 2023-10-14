@@ -1,13 +1,8 @@
 @font-face {
     font-family: 'Kannada Sangam MN';
-    src: url('./kannada-sangam-mn-bold.ttf') format('truetype'); /* Adjust the path to your .ttf file */
+    src: url('./kannada-sangam-mn-bold.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-  }
-  
-  /* Example of applying the font to an element with a class */
-  .my-custom-font {
-    font-family: 'Kannada Sangam MN', sans-serif;
   }
 
 .bigger-font {
@@ -27,10 +22,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    font-family: 'Kannada Sangam MN';
+    font-size: 24px;
 }
 
 .trailer {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-family: 'Kannada Sangam MN';
 }

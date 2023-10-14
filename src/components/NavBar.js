@@ -14,16 +14,12 @@ export default function NavBar() {
           />
         </Grid>
         <Grid item xs={5} sm={3} md={1} lg = {0.5} className="title">
-        <Typography style={{ fontFamily: 'Tahoma', fontSize: '24px' }}>
             QuickCare
-        </Typography>
         </Grid>
         <Grid item xs={0} sm={2} md={2} lg = {6}/>
         <Grid item xs={4.5} sm={6} md={6} lg = {4} className="trailer">
             <Box>
-                <Typography>
-                    Finding the quickest treatment with real time data
-                </Typography>
+                Finding the quickest treatment with real time data
             </Box>
         </Grid>
       </Grid>
