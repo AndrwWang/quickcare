@@ -239,7 +239,8 @@ export default function Map() {
       for (var i = 0; i < predictions.length; i++) {
         console.log(predictions[i]);
         newPredictions.push({
-          text: predictions[i].description,
+          primaryText: predictions[i].structured_formatting.main_text,
+          secondaryText: predictions[i].structured_formatting.secondary_text,
           placeID: predictions[i].place_id
         })
       }

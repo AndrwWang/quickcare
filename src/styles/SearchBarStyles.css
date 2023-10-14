@@ -1,12 +1,24 @@
 .search-bar {
     position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     height: 8vh;
-    top: 8vh;
-    left: 40vw;
-    right: 40vw;
+    top: 2vh;
+    left: 30vw;
+    right: 30vw;
     z-index: 1;
 }
 
 .autocomplete-menu {
     background-color: white;
+    width: 95%;
+    border-radius: 0 0 10px 10px;
+}
+
+.autocomplete-item {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: left
 }
