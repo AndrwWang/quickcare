@@ -7,7 +7,7 @@ import LocationMarker from './LocationMarker'
 import { Typography } from '@mui/material';
 import SearchBar from './SearchBar';
 
-export default function Map({ minHeight }) {
+export default function Map() {
   const MAPS_API_KEY = "AIzaSyCaE9RH_1va56W_XJ9HzdWC6h-ufMH7DZQ";
   const ROUTES_API_KEY = "AIzaSyAwD84G84lq3_xFmARY1p0ve9DrANs_cv8";
   const ATLANTA = {
@@ -224,6 +224,11 @@ export default function Map({ minHeight }) {
 
   const searchUpdated = async (e) => {
     const newSearch = e.target.value;
+    if (newSearch == '') {
+      setAutocompleteResults([]);
+      return;
+    }
+
     console.log('new value: ' + newSearch);
     autocompleteService.current.getPlacePredictions({
       input: newSearch
@@ -247,9 +252,6 @@ export default function Map({ minHeight }) {
 
 	return (
 			<div className="map-container">
-        <Typography>
-          Travel Time: {travelTime / 3600} hours
-        </Typography>
         <SearchBar
           valueRef={searchValue}
           onChange={searchUpdated}
@@ -263,7 +265,6 @@ export default function Map({ minHeight }) {
 					options={mapOptions}
 					onGoogleApiLoaded={onGoogleApiLoaded}
 					onChange={onMapChange}
-          mapMinHeight={minHeight}
 				>
           {markers.map((marker, i) => {
             if (marker.isHospital) {
