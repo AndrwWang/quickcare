@@ -2,7 +2,7 @@
 	"maxZoom": 20,
 	"minZoom": 3,
 	"mapTypeId": "roadmap",
-	"mapTypeControl": true,
+	"mapTypeControl": false,
 	"scaleControl": true,
 	"streetViewControl": true,
 	"rotateControl": true,
