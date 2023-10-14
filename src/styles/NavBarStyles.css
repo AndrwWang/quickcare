@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'Kannada Sangam MN';
-    src: url('/Users/andrewwang/Desktop/er-find/src/styles/kannada-sangam-mn-bold.ttf') format('truetype'); /* Adjust the path to your .ttf file */
+    src: url('./kannada-sangam-mn-bold.ttf') format('truetype'); /* Adjust the path to your .ttf file */
     font-weight: normal;
     font-style: normal;
   }
