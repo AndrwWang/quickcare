@@ -1,0 +1,36 @@
+@font-face {
+    font-family: 'Kannada Sangam MN';
+    src: url('/Users/andrewwang/Desktop/er-find/src/styles/kannada-sangam-mn-bold.ttf') format('truetype'); /* Adjust the path to your .ttf file */
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  /* Example of applying the font to an element with a class */
+  .my-custom-font {
+    font-family: 'Kannada Sangam MN', sans-serif;
+  }
+
+.bigger-font {
+    font-size: 24px; /* Adjust the font size to your preference */
+  }
+
+  
+.navbar {
+    background-color: white;
+    color: black;
+    height: 10vh;
+    display: flex;
+    flex-direction: row;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trailer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

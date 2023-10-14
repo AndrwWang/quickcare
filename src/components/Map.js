@@ -189,7 +189,7 @@ export default function Map() {
 				<GoogleMap
 					apiKey={MAPS_API_KEY}
 					defaultCenter={ATLANTA}
-					defaultZoom={5}
+					defaultZoom={12}
 					options={mapOptions}
 					mapMinHeight="100vh"
 					onGoogleApiLoaded={onGoogleApiLoaded}
