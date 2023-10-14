@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react'
 import mapOptions from '../styles/map-options.json'
 import '../styles/style.css'
 import HospitalMarker from './HospitalMarker'
+import LocationMarker from './LocationMarker'
 import { Typography } from '@mui/material';
 
 export default function Map({ minHeight }) {
@@ -19,7 +20,7 @@ export default function Map({ minHeight }) {
 
   // the style of the route line
   const polylineOptions = {
-    strokeColor: '#FF0000',
+    strokeColor: '#000000',
     strokeOpacity: 0.5,
     strokeWeight: 10
   };
@@ -39,7 +40,11 @@ export default function Map({ minHeight }) {
 	 */
 	const onGoogleApiLoaded = ({ map, maps }) => {
     setMarkers([
-      PIEDMONT_ATHENS
+      {
+        lat: PIEDMONT_ATHENS.lat,
+        lng: PIEDMONT_ATHENS.lng,
+        isHospital: true
+      }
     ]);
 		mapRef.current = map
     mapsRef.current = maps
@@ -70,7 +75,7 @@ export default function Map({ minHeight }) {
           console.log('response received from geolocation!')
           userLocation.current = {
             latitude: pos.lat,
-            longitude: pos.lng
+            longitude: pos.lng,
           };
         },
         () => {
@@ -165,11 +170,13 @@ export default function Map({ minHeight }) {
           ...markers,
           {
             lat: userLocation.current.latitude,
-            lng: userLocation.current.longitude
+            lng: userLocation.current.longitude, 
+            isLocation: true
           },
           {
             lat: destination.latitude,
-            lng: destination.longitude
+            lng: destination.longitude,
+            //isHospital: true
           }
         ])
         queryRoutesAPI(destination).then((duration) => {
@@ -212,11 +219,19 @@ export default function Map({ minHeight }) {
           mapMinHeight={minHeight}
 				>
           {markers.map((marker, i) => {
-            return <HospitalMarker
-              lat={marker.lat}
-              lng={marker.lng}
-              onClick={onMarkerClick}
-					  />
+            if (marker.isHospital) {
+              return <HospitalMarker
+                lat={marker.lat}
+                lng={marker.lng}
+                onClick={onMarkerClick}
+              />
+            }
+            // } else if (marker.isLocation) {
+            //   return <LocationMarker
+            //   lat={marker.lat}
+            //   lng={marker.lng}
+            //   onClick={onMarkerClick}
+            // />
           })}
 				</GoogleMap>
 			</div>
