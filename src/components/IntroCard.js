@@ -7,7 +7,7 @@ function IntroCard({ onClose }) {
     <Grid container justifyContent="center">
       <Grid item xs={11} sm={10} md={6}> 
         <div style={styles.card}>
-            <p style={styles.text}>IF YOU HAVE A LIFE THREATENING EMERGENCY PLEASE DIAL 911 </p>
+            <p style={styles.text}>IF YOU HAVE A LIFE THREATENING EMERGENCY, PLEASE DIAL 911 </p>
           <Button variant="contained" style={styles.button} onClick={onClose}>
             I understand
           </Button>

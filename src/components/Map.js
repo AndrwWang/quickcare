@@ -188,6 +188,10 @@ export default function Map() {
         origin: {
           lat: start.latitude,
           lng: start.longitude,
+<<<<<<< Updated upstream
+=======
+         // isLocation: true
+>>>>>>> Stashed changes
         },
         destination: {
           lat: destination.latitude,
@@ -336,6 +340,7 @@ export default function Map() {
     });
   }
 
+<<<<<<< Updated upstream
   return (
     <div className="map-container">
       <HospitalSidebar
@@ -365,10 +370,35 @@ export default function Map() {
           if (marker.isHospital) {
             return (
               <HospitalMarker
+=======
+	return (
+			<div className="map-container">
+        <SearchBar
+          valueRef={searchValue}
+          onLocationSelected={selected.current}
+          onChange={searchUpdated}
+          placeText={placeTextValue.current}
+          autocompleteOptions={autocompleteResults}
+          onLocationSelect={onLocationSelect}
+        />
+				<GoogleMap
+					apiKey={MAPS_API_KEY}
+					defaultCenter={ATLANTA}
+					defaultZoom={9}
+					libraries = {['places']}
+					options={mapOptions}
+					onGoogleApiLoaded={onGoogleApiLoaded}
+					onChange={onMapChange}
+				>
+          {markers.map((marker, i) => {
+            if (marker.isHospital) {
+              return <HospitalMarker
+>>>>>>> Stashed changes
                 lat={marker.lat}
                 lng={marker.lng}
                 onClick={onMarkerClick}
               />
+<<<<<<< Updated upstream
             );
           }
           // } else if (marker.isLocation) {
@@ -382,3 +412,18 @@ export default function Map() {
     </div>
   );
 }
+=======
+            } 
+            // else if (marker.isLocation) {
+            //   return <LocationMarker
+            //   lat={marker.lat}
+            //   lng={marker.lng}
+            //   onClick={onMarkerClick}
+            // />
+            // }
+          })}
+				</GoogleMap>
+			</div>
+	)
+}
+>>>>>>> Stashed changes
