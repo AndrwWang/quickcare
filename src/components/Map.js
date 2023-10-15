@@ -7,6 +7,7 @@ import LocationMarker from "./LocationMarker";
 import { Typography } from "@mui/material";
 import SearchBar from "./SearchBar";
 import ERRoom, { ChildrenHospitalInfo } from "./EmergencyRoom";
+import HospitalSidebar from "./HospitalSidebar";
 
 export default function Map() {
   const MAPS_API_KEY = "AIzaSyCaE9RH_1va56W_XJ9HzdWC6h-ufMH7DZQ";
@@ -44,6 +45,7 @@ export default function Map() {
   const [mapBounds, setMapBounds] = useState({});
   const [markers, setMarkers] = useState([]);
   const [autocompleteResults, setAutocompleteResults] = useState([]);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   /**
    * @description This function is called when the map is ready
@@ -64,23 +66,25 @@ export default function Map() {
     var places = [];
     await ERRoom().then((result) => {
       placesArray = result;
+      const PlacesService = new maps.places.PlacesService(
+        document.createElement("div")
+      );
+      for (let i = 0; i < placesArray.length; i++) {
+        const request = {
+          fields: ["rating", "user_ratings_total"],
+          query: placesArray[i].name,
+        };
+        PlacesService.findPlaceFromQuery(request, (result, status) => {
+          placesArray[i].rating = result[0].rating;
+          placesArray[i].ratingCount = result[0].user_ratings_total;
+          places.push(placesArray[i]);
+        });
+      }
+      setPlaces(places);
     });
     mapRef.current = map;
     mapsRef.current = maps;
-    const PlacesService = new maps.places.PlacesService(
-      document.createElement("div")
-    );
-    for (let i = 0; i < placesArray.length; i++) {
-      const request = {
-        fields: ["rating", "user_ratings_total"],
-        query: placesArray[i].name,
-      };
-      PlacesService.findPlaceFromQuery(request, (result, status) => {
-        placesArray[i].rating = result[0].rating;
-        placesArray[i].ratingCount = result[0].user_ratings_total;
-        places.push(placesArray[i]);
-      });
-    }
+
     autocompleteService.current =
       new mapsRef.current.places.AutocompleteService();
     geocoder.current = new mapsRef.current.Geocoder();
@@ -178,6 +182,7 @@ export default function Map() {
   function calculateAndDisplayRoute(start, destination) {
     const directionsService = directionsUtil.current.service;
     const directionsRenderer = directionsUtil.current.renderer;
+    console.log(start, destination);
     directionsService
       .route({
         origin: {
@@ -199,8 +204,8 @@ export default function Map() {
         setMarkers([
           ...markers,
           {
-            lat: startLocation.current.latitude,
-            lng: startLocation.current.longitude,
+            lat: start.latitude,
+            lng: start.longitude,
             isLocation: true,
           },
           {
