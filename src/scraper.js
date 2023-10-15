@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function App() {
+export function DataGatherer () {
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -28,9 +28,8 @@ function App() {
         const address = locationElement.querySelector('.erLocationInfo')?.textContent.trim() || 'N/A';
         const time = locationElement.querySelector('.erLocationTime')?.textContent.trim() || 'N/A';
 
-        return { name, address, time };
+          return { name, address, time };
         });
-
         setData(extractedData);
     })
     .catch((error) => {
@@ -38,21 +37,6 @@ function App() {
     });
 }, []);
 
-  return (
-    <div>
-      <h1>Emergency Room Wait Times</h1>
-      <h4>Average wait times for Piedmont emergency rooms</h4>
-      <ul>
-        {data.map((location, index) => (
-          <li key={index}>
-            <h5>{location.name}</h5>
-            <p>{location.address}</p>
-            <p>{location.time}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+    return data;
+  
 }
-
-export default App;

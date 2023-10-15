@@ -39,11 +39,12 @@ let htmlContent;
     });
 
     // Extract and format the data
-    const emergencies = [
-      ["Children's Scottish Rite Hospital", "1001 Johnson Ferry Road NE Atlanta, GA 30342", response.data.linked.waitTimes[5].maxWaitTime],
-      ["Children's Egleston Hospital", "1405 Clifton Road Atlanta, GA 30322", response.data.linked.waitTimes[6].maxWaitTime],
-      ["Children's Hughes Spalding Hospital", "35 Jesse Hill Jr. Drive SE Atlanta, GA 30303", response.data.linked.waitTimes[7].maxWaitTime]
-    ];
+    const emergencies = {"hospitals": [
+      {"name": "Children's Scottish Rite Hospital", "address": "1001 Johnson Ferry Road NE Atlanta, GA 30342", "time": response.data.linked.waitTimes[5].maxWaitTime},
+      {"name": "Children's Egleston Hospital", "address": "1405 Clifton Road Atlanta, GA 30322", "time": response.data.linked.waitTimes[6].maxWaitTime},
+      {"name": "Children's Hughes Spalding Hospital", "address": "35 Jesse Hill Jr. Drive SE Atlanta, GA 30303", "time": response.data.linked.waitTimes[7].maxWaitTime}
+    ]
+  };
 
     // Log the server-side data to the console
     console.log('Server-side data:', emergencies);
