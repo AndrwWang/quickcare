@@ -22,7 +22,7 @@ export default function NavBar() {
         <Grid item xs={0} sm={2} md={2} lg = {7}/>
         <Grid item xs={4} sm={6} md={6} lg = {3} className="trailer">
             <Box style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                Finding the quickest treatment with real time data
+                Finding the quickest treatment with real-time data
             </Box>
         </Grid>
       </Grid>

@@ -3,14 +3,17 @@ import { Rating, Button, List, ListItem, Typography, IconButton, Grid, Box } fro
 import MenuIcon from '@mui/icons-material/Menu';
 import '../styles/HospitalSidebarStyles.css';
 
-function HospitalCard({ hospital }) {
+function HospitalCard({ hospital, onClick }) {
     const addrLines = hospital.address.split('\n');
     console.log(hospital);
-    return <Button  style={{
-                border: "3px solid #E58B77",
-                color: "black",
-                textTransform: "none"
-            }}>
+    return <Button
+                style={{
+                    border: "3px solid #E58B77",
+                    color: "black",
+                    textTransform: "none"
+                }}
+                onClick={(e) => onClick(e, addrLines[0])}
+            >
             <Grid container>
                 <Grid container direction="row" className="hospital-card-row">
                     <Grid item xs={8} sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
@@ -65,7 +68,7 @@ function HospitalCard({ hospital }) {
         </Button>    
 }
 
-export default function HospitalSidebar({ hospitals, isExpanded, setExpanded }) {
+export default function HospitalSidebar({ hospitals, isExpanded, setExpanded, onHospitalClick }) {
     const fixedSizeStyle = isExpanded ? { height: '70vh', width: '25vw' } : {};
     const renderCollapsedContent = () => {
         return <IconButton onClick={() => {
@@ -74,12 +77,12 @@ export default function HospitalSidebar({ hospitals, isExpanded, setExpanded }) 
                     <MenuIcon sx={{fontSize: '3vw', padding: '5px'}}/>
                 </IconButton>
     };
-    const renderExpandedContent = (hospitals) => {
+    const renderExpandedContent = (hospitals, onHospitalClick) => {
         return <div className="expanded-main-grid" style={fixedSizeStyle}>
             <List style={{overflow: 'auto', flex: 10}}>
                 {hospitals.map((hospital, i) => {
                     return <ListItem>
-                        <HospitalCard hospital={hospital}/>
+                        <HospitalCard hospital={hospital} onClick={onHospitalClick}/>
                     </ListItem>
                 })}
             </List>
@@ -93,7 +96,7 @@ export default function HospitalSidebar({ hospitals, isExpanded, setExpanded }) 
 
 	return (
         <div className="floating-container" style={fixedSizeStyle}>
-            {isExpanded ? renderExpandedContent(hospitals) : renderCollapsedContent() }
+            {isExpanded ? renderExpandedContent(hospitals, onHospitalClick) : renderCollapsedContent() }
         </div>
 	)
 }
