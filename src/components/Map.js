@@ -12,6 +12,7 @@ import HospitalSidebar from "./HospitalSidebar";
 export default function Map() {
   const MAPS_API_KEY = "AIzaSyCaE9RH_1va56W_XJ9HzdWC6h-ufMH7DZQ";
   const ROUTES_API_KEY = "AIzaSyAwD84G84lq3_xFmARY1p0ve9DrANs_cv8";
+	
   const ATLANTA = {
     lat: 33.7488,
     lng: -84.3877,
@@ -65,13 +66,14 @@ export default function Map() {
       );
       for (let i = 0; i < placesArray.length; i++) {
         const request = {
-          fields: ["rating", "user_ratings_total"],
-          query: placesArray[i].name,
-        };
+            fields: ['place_id', 'rating', 'user_ratings_total' ],
+            query: placesArray[i].name
+            };
         PlacesService.findPlaceFromQuery(request, (result, status) => {
-          placesArray[i].rating = result[0].rating;
-          placesArray[i].ratingCount = result[0].user_ratings_total;
-          places.push(placesArray[i]);
+            placesArray[i].rating = result[0].rating;
+			placesArray[i].ratingCount = result[0].user_ratings_total;
+			placesArray[i].place_id = result[0].place_id;
+			places.push(placesArray[i]);
         });
       }
       setPlaces(places);
@@ -92,12 +94,66 @@ export default function Map() {
     rend.setMap(map);
     directionsUtil.current = {
       service: serv,
-      renderer: rend,
-    };
-
-    await getSetUserLoc();
-  };
-
+      renderer: rend
+    }
+    
+    getSetUserLoc()
+	var smallestValue = 100000000;
+	var timedArray = [];
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(
+		  async (geoPosition) => {
+			// Extract latitude and longitude from the position object
+			const { latitude, longitude } = geoPosition.coords;
+			var start = {
+			  latitude: latitude,
+			  longitude: longitude,
+			};
+			var closestDestination = null;
+			console.log(start, "start");
+	  
+			for (let i = 0; i < places.length; i++) {
+			  try {
+				const { results } = await geocoder.current.geocode({ placeId: places[i].place_id });
+	  
+				const destination = {
+				  latitude: results[0].geometry.location.lat(),
+				  longitude: results[0].geometry.location.lng(),
+				};
+				console.log("destination", destination);
+				var time = 0;
+				const result = await queryRoutesAPI(start, destination);
+				console.log("wait time", places[i].time);
+				console.log("drive time", result);
+	  
+				places[i].overall_time = places[i].time + result / 60;
+				console.log(places[i]);
+				console.log("overall", places[i].overall_time);
+			  } catch (error) {
+				window.alert(error);
+			  }
+			}
+	  
+			// Sort the array after the for loop is done
+			await sortArrayByProperty(places);
+	  
+			const { results } = await geocoder.current.geocode({ placeId: places[0].place_id });
+	  
+				const destination = {
+				  latitude: results[0].geometry.location.lat(),
+				  longitude: results[0].geometry.location.lng(),
+				};
+			calculateAndDisplayRoute(start, destination);
+	  },
+	  (error) => {
+		console.error('Error getting current position:', error);
+	  }
+	);
+  } else {
+		console.error('Geolocation is not supported by this browser.');
+	  }
+	
+	}
   async function getSetUserLoc() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(

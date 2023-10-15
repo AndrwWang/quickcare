@@ -24,7 +24,7 @@ export default function DataGatherer () {
         const extractedData = Array.from(locationElements).map(locationElement => {
         const name = locationElement.querySelector('a')?.textContent || 'N/A';
         const address = locationElement.querySelector('.erLocationInfo')?.textContent.trim() || 'N/A';
-        const time = parseInt(locationElement.querySelector('.erLocationTime')?.textContent.trim().split("min")[0]) || 'N/A';
+        const time = parseInt(locationElement.querySelector('.erLocationTime')?.textContent.trim().split("min")[0]) || 0;
 
           return { name, address, time };
         });
