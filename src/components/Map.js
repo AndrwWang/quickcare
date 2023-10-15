@@ -43,7 +43,8 @@ export default function Map() {
   const placeTextValue = useRef("");
   const selected = useRef(false);
   const [mapBounds, setMapBounds] = useState({});
-  const [markers, setMarkers] = useState([]);
+  // const [markers, setMarkers] = useState([]);
+  const [destMarker, setDestMarker] = useState(PIEDMONT_ATHENS);
   const [autocompleteResults, setAutocompleteResults] = useState([]);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [selectedHospitalIndex, setSelectedHospitalIndex] = useState(0);
@@ -55,14 +56,6 @@ export default function Map() {
    */
   const onGoogleApiLoaded = async ({ map, maps }) => {
     //ChildrenHospitalInfo().then((response) => setPlacesArray(DataGatherer().concat(response)));
-
-    setMarkers([
-      {
-        lat: PIEDMONT_ATHENS.lat,
-        lng: PIEDMONT_ATHENS.lng,
-        isHospital: true, //hospital marker shown
-      },
-    ]);
     var placesArray = [];
     var places = [];
     await ERRoom().then((result) => {
@@ -202,19 +195,11 @@ export default function Map() {
       })
       .then((response) => {
         directionsRenderer.setDirections(response);
-        setMarkers([
-          ...markers,
-          {
-            lat: start.latitude,
-            lng: start.longitude,
-            isLocation: true,
-          },
-          {
-            lat: destination.latitude,
-            lng: destination.longitude,
-            isHospital: true,
-          },
-        ]);
+        setDestMarker({
+          lat: destination.latitude,
+          lng: destination.longitude,
+          isHospital: true,
+        });
         queryRoutesAPI(start, destination)
           .then((duration) => {
             console.log("Success! Duration found");
@@ -283,8 +268,8 @@ export default function Map() {
     setAutocompleteResults([])
 
     placeTextValue.current = menuItem.ariaLabel;
-    console.log(placeTextValue.current);;
     getLatLngFromPlaceID(placeID).then((latLng) => {
+      startLocation.current = latLng;
       calculateAndDisplayRoute(latLng, {
         latitude: PIEDMONT_ATHENS.lat,
         longitude: PIEDMONT_ATHENS.lng,
@@ -367,17 +352,29 @@ export default function Map() {
         onGoogleApiLoaded={onGoogleApiLoaded}
         onChange={onMapChange}
       >
-        {markers.map((marker, i) => {
+        {startLocation.current != null ? <LocationMarker
+                lat={startLocation.current.latitude}
+                lng={startLocation.current.longitude}
+                onClick={onMarkerClick}
+              />: null}
+        <HospitalMarker
+                lat={destMarker.lat}
+                lng={destMarker.lng}
+                onClick={onMarkerClick}
+              />
+        
+        {/* {markers.map((marker, i) => {
           if (marker.isHospital && i == markers.length - 1) {
             return (
               <HospitalMarker
                 lat={marker.lat}
                 lng={marker.lng}
                 onClick={onMarkerClick}
+                key={i}
               />
             );
           }
-        })}
+        })} */}
       </GoogleMap>
     </div>
   );

@@ -8,10 +8,10 @@ export default function LocationMarker({ lat, lng, onClick }) {
     top: `${lng+50}px`,   // Adjust the value according to your marker's design
   };
 
-  const markerSize = {
-    width: "40px",  // Adjust the width as needed
-    height: "40px", // Adjust the height as needed
-  };
+  // const markerSize = {
+  //   width: "40px",  // Adjust the width as needed
+  //   height: "40px", // Adjust the height as needed
+  // };
 
   return (
     <div className="marker-container" style={markerStyle}>
@@ -19,7 +19,7 @@ export default function LocationMarker({ lat, lng, onClick }) {
       className='marker'
       src={locationmarkerIcon}
       alt="location marker"
-      style={markerSize}
+      //style={markerSize}
       onClick={(e) => onClick(e, { latitude: lat, longitude: lng })}
     />
   </div>

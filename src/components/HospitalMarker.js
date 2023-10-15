@@ -23,9 +23,3 @@ export default function HospitalMarker({ lat, lng, onClick }) {
     </div>
   );
 }
-
-
-
-
-
-

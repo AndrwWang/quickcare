@@ -5,6 +5,7 @@ import '../styles/HospitalSidebarStyles.css';
 
 function HospitalCard({ hospital, index, onClick, isSelected }) {
     const addrLines = hospital.address.split('\n');
+    console.log(hospital);
     const highlightedStyle = isSelected ? { backgroundColor: 'rgb(229, 139, 119, 0.3)' } : {};
     return <Button
                 style={{
