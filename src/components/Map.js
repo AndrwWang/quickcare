@@ -200,7 +200,10 @@ export default function Map() {
 
   // location selected in autocomplete dropdown menu
   const onLocationSelect = (e) => {
-    const placeID = e.target.id;
+    // make sure to get the MenuItem component, which has the placeID
+    const menuItem = e.target.closest('.autocomplete-item');
+    const placeID = menuItem.id;
+
     geocoder.current.geocode({ placeId: placeID })
     .then(({ results }) => {
       const start = {
@@ -212,7 +215,10 @@ export default function Map() {
         longitude: PIEDMONT_ATHENS.lng
       });
     })
-    .catch((e) => window.alert("Geocoder failed due to: " + e));
+    .catch((error) => {
+      window.alert(error);
+      console.log('geocoder failed! target was ' + e.target);
+    });
   }
 
 	const onMapChange = ({ bounds, zoom }) => {
