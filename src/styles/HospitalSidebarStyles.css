@@ -1,0 +1,24 @@
+.floating-container {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    top: 10vh;
+    left: 0vw;
+    background-color: white;
+    border-radius: 0 10px 10px 0;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, .2);
+    z-index: 1;
+}
+
+.expanded-main-grid {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.hospital-card-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

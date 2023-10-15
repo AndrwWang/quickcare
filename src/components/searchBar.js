@@ -4,7 +4,6 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import '../styles/SearchBarStyles.css';
 
 export default function SearchBar({ valueRef, onChange, autocompleteOptions, onLocationSelect }) {
-	console.log(autocompleteOptions);
 	return (
 		<div className="search-bar">
 			<TextField
