@@ -1,4 +1,4 @@
-[App Demo Video](https://youtu.be/C5ccDFRQd88?si=zq6KAwx2JMMQlsWI)
+[Website Demo Video](https://youtu.be/C5ccDFRQd88?si=zq6KAwx2JMMQlsWI)
 
 ## Inspiration
 Since 2018, the median wait time in hospital emergency rooms in the US has been increasing, even after the Covid pandemic ended (2:15 hours in 2018 to 2:40 hours in 2022). This is highly concerning, as longer wait times result in delayed treatments, increased pain for waiting patients, and unpleasant treatment environments. What people don’t realize is that wait times are so long that they greatly offset the driving time, meaning that the closest facility to drive to will not necessarily get you treatment the fastest. Realizing a need for this solution, we wanted to create a platform that finds optimal facilities to minimize the suffering of desperate patients. 
