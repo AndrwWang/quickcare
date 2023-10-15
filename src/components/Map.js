@@ -135,7 +135,7 @@ export default function Map() {
 			}
 	  
 			// Sort the array after the for loop is done
-			await sortArrayByProperty(places);
+			await places.sort((a, b) => (a.overall_time < b.overall_time ? -1 : a.overall_time > b.overall_time ? 1 : 0));;
 	  
 			const { results } = await geocoder.current.geocode({ placeId: places[0].place_id });
 	  
