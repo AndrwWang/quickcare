@@ -55,7 +55,7 @@ export default function Map() {
       {
         lat: PIEDMONT_ATHENS.lat,
         lng: PIEDMONT_ATHENS.lng,
-        isHospital: true
+        isHospital: true //hospital marker shown
       }
     ]);
 	var placesArray = [];

@@ -12,10 +12,12 @@
   
 .navbar {
     background-color: white;
-    color: black;
     height: 10vh;
     display: flex;
     flex-direction: row;
+    box-shadow: 5px 4px 11px 0px rgba(0, 0, 0, 0.50);
+
+    
 }
 
 .title {
@@ -23,7 +25,9 @@
     align-items: center;
     justify-content: center;
     font-family: 'Kannada Sangam MN';
-    font-size: 24px;
+    font-size: 36px;
+    font-weight: bold; /* Add this to make it bolder */
+    color: #EB7752; /* Add this to change the color to gray */
 }
 
 .trailer {
@@ -31,4 +35,5 @@
     align-items: center;
     justify-content: center;
     font-family: 'Kannada Sangam MN';
+    color: #545454; /* Add this to change the color to gray */
 }
