@@ -1,5 +1,13 @@
+@font-face {
+    font-family: 'Kannada Sangam MN';
+    src: url('./kannada-sangam-mn-bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
 .map-container {
 	position: relative;
 	width: 100%;
 	height: 90vh;
+	font-family: 'Kannada Sangam MN';
 }

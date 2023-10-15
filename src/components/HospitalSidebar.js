@@ -19,13 +19,13 @@ function HospitalCard({ hospital, index, onClick, isSelected }) {
             <Grid container>
                 <Grid container direction="row" className="hospital-card-row">
                     <Grid item xs={8} sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <Typography variant='h7'>
+                        <Typography variant='h6'>
                             {hospital.name}
                         </Typography>
                     </Grid>
                     <Grid item xs={4} sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <Typography>
-                            {hospital.time} min
+                        <Typography variant='h5' fontWeight="fontWeightBold">
+                            {parseFloat(hospital.overall_time).toFixed(2)} min
                         </Typography>
                     </Grid>
                 </Grid>
@@ -38,9 +38,9 @@ function HospitalCard({ hospital, index, onClick, isSelected }) {
                         })}
                         
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={4} sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <Typography>
-                            PLACEHOLDER DRIVE TIME
+                            Wait time:<br />~{hospital.time} min
                         </Typography>
                     </Grid>
                 </Grid>
@@ -63,7 +63,7 @@ function HospitalCard({ hospital, index, onClick, isSelected }) {
                         </Grid>
                     </Grid>
                     <Grid item xs={4}>
-                        {hospital.time}
+                        Drive time:<br />{parseFloat(hospital.overall_time - hospital.time).toFixed(2)} min
                     </Grid>
                 </Grid>
             </Grid>
@@ -71,7 +71,7 @@ function HospitalCard({ hospital, index, onClick, isSelected }) {
 }
 
 export default function HospitalSidebar({ hospitals, isExpanded, setExpanded, onHospitalClick, selectedIndex }) {
-    const expandedStyle = isExpanded ? { height: '70vh', width: '25vw', borderRadius: '0 0 10px 0' } : {};
+    const expandedStyle = isExpanded ? { height: '90vh', width: '40vw', borderRadius: '0 0 10px 0' } : {};
     const renderCollapsedContent = (shouldExpandUponClick) => {
         return <IconButton onClick={() => {
             setExpanded(shouldExpandUponClick);

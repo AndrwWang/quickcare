@@ -49,6 +49,7 @@ export default function Map() {
   const [autocompleteResults, setAutocompleteResults] = useState([]);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [selectedHospitalIndex, setSelectedHospitalIndex] = useState(0);
+  const [sortingInProgress, setSortingInProgress] = useState(true);
 
   /**
    * @description This function is called when the map is ready
@@ -135,8 +136,11 @@ export default function Map() {
 			}
 	  
 			// Sort the array after the for loop is done
-			await places.sort((a, b) => (a.overall_time < b.overall_time ? -1 : a.overall_time > b.overall_time ? 1 : 0));;
-	  
+			places.sort((a, b) => (a.overall_time < b.overall_time ? -1 : a.overall_time > b.overall_time ? 1 : 0));;
+      setSortingInProgress(false);
+      setSidebarOpen(true);
+      setPlaces(places);
+
 			const { results } = await geocoder.current.geocode({ placeId: places[0].place_id });
 	  
 				const destination = {
@@ -251,6 +255,7 @@ export default function Map() {
       })
       .then((response) => {
         directionsRenderer.setDirections(response);
+
         setDestMarker({
           lat: destination.latitude,
           lng: destination.longitude,
@@ -381,7 +386,7 @@ export default function Map() {
       console.error("Error fetching place predictions:", error);
     });
   }
-
+  console.log(sortingInProgress);
   return (
     <div className="map-container">
       <HospitalSidebar
@@ -390,7 +395,28 @@ export default function Map() {
         setExpanded={setSidebarOpen}
         onHospitalClick={onHospitalSelect}
         selectedIndex={selectedHospitalIndex}
-      />
+      />{
+        sortingInProgress ? 
+        <div style={{
+          position: 'absolute',
+          zIndex: 999,
+          bottom: '10vh',
+          left: '42vw',
+          right: '42vw',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'white',
+          paddingTop: '10px',
+          paddingBottom: '10px',
+          borderRadius: '10px',
+          border: '3px solid #E58B77'
+        }}>
+          Sorting hospital data...
+        </div>
+        :
+        null
+      }
       <SearchBar
         valueRef={searchValue}
         onLocationSelected={selected.current}
