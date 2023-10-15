@@ -182,7 +182,6 @@ export default function Map() {
   function calculateAndDisplayRoute(start, destination) {
     const directionsService = directionsUtil.current.service;
     const directionsRenderer = directionsUtil.current.renderer;
-    console.log(start, destination);
     directionsService
       .route({
         origin: {

@@ -69,16 +69,19 @@ function HospitalCard({ hospital, onClick }) {
 }
 
 export default function HospitalSidebar({ hospitals, isExpanded, setExpanded, onHospitalClick }) {
-    const fixedSizeStyle = isExpanded ? { height: '70vh', width: '25vw' } : {};
-    const renderCollapsedContent = () => {
+    const expandedStyle = isExpanded ? { height: '70vh', width: '25vw', borderRadius: '0 0 10px 0' } : {};
+    const renderCollapsedContent = (shouldExpandUponClick) => {
         return <IconButton onClick={() => {
-            setExpanded(true);
+            setExpanded(shouldExpandUponClick);
         }}>
                     <MenuIcon sx={{fontSize: '3vw', padding: '5px'}}/>
                 </IconButton>
     };
     const renderExpandedContent = (hospitals, onHospitalClick) => {
-        return <div className="expanded-main-grid" style={fixedSizeStyle}>
+        return <div className="expanded-main-grid" style={expandedStyle}>
+            <div className="floating-container" style={{top: 0, borderRadius: '0 10px 10px 0', left: '100%'}}>
+                {renderCollapsedContent(false)}
+            </div>
             <List style={{overflow: 'auto', flex: 10}}>
                 {hospitals.map((hospital, i) => {
                     return <ListItem>
@@ -86,17 +89,12 @@ export default function HospitalSidebar({ hospitals, isExpanded, setExpanded, on
                     </ListItem>
                 })}
             </List>
-            <IconButton sx={{flex: 1}}className="TEMP_TOGGLE" onClick={() => {
-                setExpanded(false);
-            }}>
-                <MenuIcon sx={{fontSize: '3vw', padding: '5px'}}/>
-            </IconButton> 
         </div>
     };
 
 	return (
-        <div className="floating-container" style={fixedSizeStyle}>
-            {isExpanded ? renderExpandedContent(hospitals, onHospitalClick) : renderCollapsedContent() }
+        <div className="floating-container" style={expandedStyle}>
+            {isExpanded ? renderExpandedContent(hospitals, onHospitalClick) : renderCollapsedContent(true) }
         </div>
 	)
 }
