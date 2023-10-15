@@ -3,16 +3,17 @@ import { Rating, Button, List, ListItem, Typography, IconButton, Grid, Box } fro
 import MenuIcon from '@mui/icons-material/Menu';
 import '../styles/HospitalSidebarStyles.css';
 
-function HospitalCard({ hospital, onClick }) {
+function HospitalCard({ hospital, index, onClick, isSelected }) {
     const addrLines = hospital.address.split('\n');
-    console.log(hospital);
+    const highlightedStyle = isSelected ? { backgroundColor: 'rgb(229, 139, 119, 0.3)' } : {};
     return <Button
                 style={{
                     border: "3px solid #E58B77",
                     color: "black",
-                    textTransform: "none"
+                    textTransform: "none",
+                    ...highlightedStyle
                 }}
-                onClick={(e) => onClick(e, addrLines[0])}
+                onClick={(e) => onClick(e, index, addrLines[0])}
             >
             <Grid container>
                 <Grid container direction="row" className="hospital-card-row">
@@ -68,7 +69,7 @@ function HospitalCard({ hospital, onClick }) {
         </Button>    
 }
 
-export default function HospitalSidebar({ hospitals, isExpanded, setExpanded, onHospitalClick }) {
+export default function HospitalSidebar({ hospitals, isExpanded, setExpanded, onHospitalClick, selectedIndex }) {
     const expandedStyle = isExpanded ? { height: '70vh', width: '25vw', borderRadius: '0 0 10px 0' } : {};
     const renderCollapsedContent = (shouldExpandUponClick) => {
         return <IconButton onClick={() => {
@@ -77,7 +78,7 @@ export default function HospitalSidebar({ hospitals, isExpanded, setExpanded, on
                     <MenuIcon sx={{fontSize: '3vw', padding: '5px'}}/>
                 </IconButton>
     };
-    const renderExpandedContent = (hospitals, onHospitalClick) => {
+    const renderExpandedContent = (hospitals, onHospitalClick, selectedIndex) => {
         return <div className="expanded-main-grid" style={expandedStyle}>
             <div className="floating-container" style={{top: 0, borderRadius: '0 10px 10px 0', left: '100%'}}>
                 {renderCollapsedContent(false)}
@@ -85,7 +86,7 @@ export default function HospitalSidebar({ hospitals, isExpanded, setExpanded, on
             <List style={{overflow: 'auto', flex: 10}}>
                 {hospitals.map((hospital, i) => {
                     return <ListItem>
-                        <HospitalCard hospital={hospital} onClick={onHospitalClick}/>
+                        <HospitalCard hospital={hospital} index={i} onClick={onHospitalClick} isSelected={selectedIndex == i}/>
                     </ListItem>
                 })}
             </List>
@@ -94,7 +95,7 @@ export default function HospitalSidebar({ hospitals, isExpanded, setExpanded, on
 
 	return (
         <div className="floating-container" style={expandedStyle}>
-            {isExpanded ? renderExpandedContent(hospitals, onHospitalClick) : renderCollapsedContent(true) }
+            {isExpanded ? renderExpandedContent(hospitals, onHospitalClick, selectedIndex) : renderCollapsedContent(true) }
         </div>
 	)
 }

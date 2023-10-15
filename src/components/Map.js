@@ -46,6 +46,7 @@ export default function Map() {
   const [markers, setMarkers] = useState([]);
   const [autocompleteResults, setAutocompleteResults] = useState([]);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedHospitalIndex, setSelectedHospitalIndex] = useState(0);
 
   /**
    * @description This function is called when the map is ready
@@ -323,7 +324,9 @@ export default function Map() {
   };
 
   // called when hospital is selected in sidebar list
-  const onHospitalSelect = (e, address) => {
+  const onHospitalSelect = (e, index, address) => {
+    setSelectedHospitalIndex(index);
+    
     // use autocomplete to get place_id of best match
     // then get latLng from place_id
     // finally use latLng to display route info to user
@@ -345,6 +348,7 @@ export default function Map() {
         isExpanded={isSidebarOpen}
         setExpanded={setSidebarOpen}
         onHospitalClick={onHospitalSelect}
+        selectedIndex={selectedHospitalIndex}
       />
       <SearchBar
         valueRef={searchValue}
@@ -364,7 +368,7 @@ export default function Map() {
         onChange={onMapChange}
       >
         {markers.map((marker, i) => {
-          if (marker.isHospital) {
+          if (marker.isHospital && i == markers.length - 1) {
             return (
               <HospitalMarker
                 lat={marker.lat}
@@ -373,12 +377,6 @@ export default function Map() {
               />
             );
           }
-          // } else if (marker.isLocation) {
-          //   return <LocationMarker
-          //   lat={marker.lat}
-          //   lng={marker.lng}
-          //   onClick={onMarkerClick}
-          // />
         })}
       </GoogleMap>
     </div>
