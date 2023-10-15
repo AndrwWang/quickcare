@@ -35,12 +35,13 @@ export default function Map() {
   const autocompleteService = useRef(null);
   const geocoder = useRef(null);
 
-  const userLocation = useRef(null);
+  // default starting location is the user location
+  const startLocation = useRef(null);
+
   const searchValue = useRef("");
   const placeTextValue = useRef("Where are you?");
   const selected = useRef(false);
   const [mapBounds, setMapBounds] = useState({});
-  const [travelTime, setTravelTime] = useState(0);
   const [markers, setMarkers] = useState([]);
   const [autocompleteResults, setAutocompleteResults] = useState([]);
 
@@ -108,7 +109,7 @@ export default function Map() {
             lng: position.coords.longitude,
           };
           console.log("response received from geolocation!");
-          userLocation.current = {
+          startLocation.current = {
             latitude: pos.lat,
             longitude: pos.lng,
           };
@@ -198,8 +199,8 @@ export default function Map() {
         setMarkers([
           ...markers,
           {
-            lat: userLocation.current.latitude,
-            lng: userLocation.current.longitude,
+            lat: startLocation.current.latitude,
+            lng: startLocation.current.longitude,
             isLocation: true,
           },
           {
@@ -211,7 +212,6 @@ export default function Map() {
         queryRoutesAPI(start, destination)
           .then((duration) => {
             console.log("Success! Duration found");
-            setTravelTime(duration);
           })
           .catch((error) => {
             // Handle any errors here
@@ -221,9 +221,52 @@ export default function Map() {
       .catch((e) => window.alert("Directions request failed: " + e));
   }
 
-  const onMarkerClick = async (e, location) => {
+  function getLatLngFromPlaceID(placeID) {
+    return new Promise((resolve, reject) => {
+      geocoder.current
+      .geocode({ placeId: placeID })
+      .then(({ results }) => {
+        const latLng = {
+          latitude: results[0].geometry.location.lat(),
+          longitude: results[0].geometry.location.lng(),
+        };
+        resolve(latLng);
+      })
+      .catch((error) => {
+        window.alert(error);
+        reject(error);
+      });
+    })
+  }
+
+  function getAutocompletePredictions(targetSearch) {
+    return new Promise((resolve, reject) => {
+      autocompleteService.current
+      .getPlacePredictions({
+        input: targetSearch,
+      })
+      .then((response) => {
+        const predictions = response.predictions;
+        let newPredictions = [];
+        for (var i = 0; i < predictions.length; i++) {
+          newPredictions.push({
+            primaryText: predictions[i].structured_formatting.main_text,
+            secondaryText: predictions[i].structured_formatting.secondary_text,
+            placeID: predictions[i].place_id,
+          });
+        }
+        resolve(newPredictions);
+      })
+      .catch((error) => {
+        console.error("Error fetching place predictions:", error);
+        reject(error);
+      });
+    })
+  }
+
+  const onMarkerClick = (e, location) => {
     console.log("marker clicked!");
-    await calculateAndDisplayRoute(userLocation.current, location);
+    calculateAndDisplayRoute(startLocation.current, location);
   };
 
   // location selected in autocomplete dropdown menu
@@ -231,27 +274,19 @@ export default function Map() {
     // make sure to get the MenuItem component, which has the placeID
     const menuItem = e.target.closest(".autocomplete-item");
     const placeID = menuItem.id;
+
     placeTextValue.current = menuItem.geolocation;
     selected.current = true;
     console.log("ee", selected);
-
-    geocoder.current
-      .geocode({ placeId: placeID })
-      .then(({ results }) => {
-        const start = {
-          latitude: results[0].geometry.location.lat(),
-          longitude: results[0].geometry.location.lng(),
-        };
-        console.log(start);
-        calculateAndDisplayRoute(start, {
-          latitude: PIEDMONT_ATHENS.lat,
-          longitude: PIEDMONT_ATHENS.lng,
-        });
-      })
-      .catch((error) => {
-        window.alert(error);
-        console.log("geocoder failed! target was " + e.target);
+    getLatLngFromPlaceID(placeID).then((latLng) => {
+      calculateAndDisplayRoute(latLng, {
+        latitude: PIEDMONT_ATHENS.lat,
+        longitude: PIEDMONT_ATHENS.lng,
       });
+    })
+    .catch((error) => {
+      console.log(error)
+    });
   };
 
   const onMapChange = ({ bounds, zoom }) => {
@@ -272,31 +307,38 @@ export default function Map() {
       return;
     }
 
-    console.log("new value: " + newSearch);
-    autocompleteService.current
-      .getPlacePredictions({
-        input: newSearch,
-      })
-      .then((response) => {
-        const predictions = response.predictions;
-        let newPredictions = [];
-        for (var i = 0; i < predictions.length; i++) {
-          console.log(predictions[i]);
-          newPredictions.push({
-            primaryText: predictions[i].structured_formatting.main_text,
-            secondaryText: predictions[i].structured_formatting.secondary_text,
-            placeID: predictions[i].place_id,
-          });
-        }
-        setAutocompleteResults(newPredictions);
-      })
-      .catch((error) => {
-        console.error("Error fetching place predictions:", error);
-      });
+    getAutocompletePredictions(newSearch).then((predictions) => {
+      setAutocompleteResults(predictions);
+    })
+    .catch((error) => {
+      console.error("Error fetching place predictions:", error);
+    });
   };
+
+  // called when hospital is selected in sidebar list
+  const onHospitalSelect = (e, address) => {
+    // use autocomplete to get place_id of best match
+    // then get latLng from place_id
+    // finally use latLng to display route info to user
+    getAutocompletePredictions(address).then((predictions) => {
+      const placeID = predictions[0].placeID;
+      getLatLngFromPlaceID(placeID).then((latLng) => {
+        calculateAndDisplayRoute(startLocation.current, latLng);
+      });
+    })
+    .catch((error) => {
+      console.error("Error fetching place predictions:", error);
+    });
+  }
 
   return (
     <div className="map-container">
+      <HospitalSidebar
+        hospitals={places}
+        isExpanded={isSidebarOpen}
+        setExpanded={setSidebarOpen}
+        onHospitalClick={onHospitalSelect}
+      />
       <SearchBar
         valueRef={searchValue}
         onLocationSelected={selected.current}
