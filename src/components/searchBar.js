@@ -3,12 +3,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import '../styles/SearchBarStyles.css';
 
-export default function SearchBar({ valueRef, onChange, autocompleteOptions, onLocationSelect, placeText, onLocationSelected }) {
+export default function SearchBar({ valueRef, onChange, autocompleteOptions, onLocationSelect, placeText }) {
 	return (
 		<div className="search-bar">
 			<TextField
 				fullWidth
-				placeholder={(valueRef === "") ? "Where are you?": placeText}
+				placeholder={"Where are you?"}
+				value={placeText}
 				inputRef={valueRef}
 				onChange={onChange}
 				style={{
@@ -26,10 +27,10 @@ export default function SearchBar({ valueRef, onChange, autocompleteOptions, onL
 						borderRadius: "10px"
 					}
 				}}/>
-			{ autocompleteOptions.length === 0 || onLocationSelected === true ? null : 
+			{ autocompleteOptions.length === 0 ? null : 
 			<MenuList className="autocomplete-menu" sx={{boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.3)'}}>
 				{autocompleteOptions.map((option, i) => {
-					return <MenuItem className="autocomplete-item" id={option.placeID} onClick={onLocationSelect}>
+					return <MenuItem className="autocomplete-item" aria-label={option.primaryText} id={option.placeID} onClick={onLocationSelect}>
 							<Typography variant="h6" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>
 								{option.primaryText}
 							</Typography>

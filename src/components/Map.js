@@ -40,7 +40,7 @@ export default function Map() {
   const startLocation = useRef(null);
 
   const searchValue = useRef("");
-  const placeTextValue = useRef("Where are you?");
+  const placeTextValue = useRef("");
   const selected = useRef(false);
   const [mapBounds, setMapBounds] = useState({});
   const [markers, setMarkers] = useState([]);
@@ -127,8 +127,9 @@ export default function Map() {
     }
   }
 
-  function queryRoutesAPI(start, destination) {
-    const url = "https://routes.googleapis.com/directions/v2:computeRoutes";
+  async function queryRoutesAPI(start, destination) {
+
+    const url = 'https://routes.googleapis.com/directions/v2:computeRoutes';
 
     const headers = {
       "Content-Type": "application/json",
@@ -278,10 +279,10 @@ export default function Map() {
     // make sure to get the MenuItem component, which has the placeID
     const menuItem = e.target.closest(".autocomplete-item");
     const placeID = menuItem.id;
+    setAutocompleteResults([])
 
-    placeTextValue.current = menuItem.geolocation;
-    selected.current = true;
-    console.log("ee", selected);
+    placeTextValue.current = menuItem.ariaLabel;
+    console.log(placeTextValue.current);;
     getLatLngFromPlaceID(placeID).then((latLng) => {
       calculateAndDisplayRoute(latLng, {
         latitude: PIEDMONT_ATHENS.lat,
@@ -291,6 +292,7 @@ export default function Map() {
     .catch((error) => {
       console.log(error)
     });
+
   };
 
   const onMapChange = ({ bounds, zoom }) => {
@@ -306,6 +308,7 @@ export default function Map() {
 
   const searchUpdated = async (e) => {
     const newSearch = e.target.value;
+    placeTextValue.current = newSearch;
     if (newSearch == "") {
       setAutocompleteResults([]);
       return;
