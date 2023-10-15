@@ -1,13 +1,15 @@
 import GoogleMap from 'google-maps-react-markers';
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import mapOptions from '../styles/map-options.json'
 import '../styles/style.css'
 import HospitalMarker from './HospitalMarker'
 import LocationMarker from './LocationMarker'
 import { Typography } from '@mui/material';
-import SearchBar from './SearchBar';
+import SearchBar from './searchBar';
+import ERRoom, { ChildrenHospitalInfo } from './EmergencyRoom';
 
 export default function Map() {
+
   const MAPS_API_KEY = "AIzaSyCaE9RH_1va56W_XJ9HzdWC6h-ufMH7DZQ";
   const ROUTES_API_KEY = "AIzaSyAwD84G84lq3_xFmARY1p0ve9DrANs_cv8";
   const ATLANTA = {
@@ -26,7 +28,9 @@ export default function Map() {
     strokeWeight: 10
   };
 
-	const mapRef = useRef(null)
+  const [places, setPlaces] = useState([]);
+  const [place_id, setPlaceId] = useState(null);
+  const mapRef = useRef(null);
   const mapsRef = useRef(null)
   const directionsUtil = useRef(null)
   const autocompleteService = useRef(null);
@@ -35,7 +39,7 @@ export default function Map() {
   const userLocation = useRef(null)
   const searchValue = useRef('')
 	const [mapBounds, setMapBounds] = useState({})
-  const [travelTime, setTravelTime] = useState(0)
+  const [travelTime, setTravelTime] = useState(0);
   const [markers, setMarkers] = useState([]);
   const [autocompleteResults, setAutocompleteResults] = useState([]);
 
@@ -45,6 +49,8 @@ export default function Map() {
 	 * @param {Object} maps - reference to the maps library
 	 */
 	const onGoogleApiLoaded = async ({ map, maps }) => {
+	//ChildrenHospitalInfo().then((response) => setPlacesArray(DataGatherer().concat(response)));
+	
     setMarkers([
       {
         lat: PIEDMONT_ATHENS.lat,
@@ -52,8 +58,23 @@ export default function Map() {
         isHospital: true
       }
     ]);
-		mapRef.current = map
+	var placesArray = [];
+	var places = [];
+	await ERRoom().then((result) => { placesArray = result });
+	mapRef.current = map
     mapsRef.current = maps
+	const PlacesService = new maps.places.PlacesService(document.createElement("div"));
+    for (let i = 0; i < placesArray.length; i++) {
+        const request = {
+            fields: ['rating', 'user_ratings_total' ],
+            query: placesArray[i].name
+            };
+        PlacesService.findPlaceFromQuery(request, (result, status) => {
+            placesArray[i].rating = result[0].rating;
+			placesArray[i].ratingCount = result[0].user_ratings_total;
+			places.push(placesArray[i]);
+        });
+	}
     autocompleteService.current = new mapsRef.current.places.AutocompleteService();
     geocoder.current = new mapsRef.current.Geocoder();
 
@@ -96,6 +117,7 @@ export default function Map() {
   }
 
   function queryRoutesAPI(start, destination) {
+
     const url = 'https://routes.googleapis.com/directions/v2:computeRoutes';
 
     const headers = {
@@ -269,6 +291,7 @@ export default function Map() {
 					apiKey={MAPS_API_KEY}
 					defaultCenter={ATLANTA}
 					defaultZoom={12}
+					libraries = {['places']}
 					options={mapOptions}
 					onGoogleApiLoaded={onGoogleApiLoaded}
 					onChange={onMapChange}

@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react";
-import { DataGatherer } from "../scraper";
+import { DatasetLinked } from "@mui/icons-material";
+import DataGatherer from "../scraper";
 
 function ChildrenHospitalInfo(){
 
@@ -17,47 +17,20 @@ function ChildrenHospitalInfo(){
 
 
 
-export default function ERRoom (){
+export default async function  ERRoom(){
 
-    const [newArray, setArray] = useState([]);
+    var data = await DataGatherer();
+    var newarr = [...data];
 
-    function HospitalInfo (){
-        var arr = [];
-        const data = DataGatherer();
-    
-        let size = data.length;
-        for (let i = 0; i < size; i++){
-            if(i == 0 || i == 3 || i == 4 || i == 5 || i == 10 || i == 11 || i == 13){
-                continue;
-            }
-            arr.push((<div key={i} className="hospital">{data[i].name + ": " + " Wait Times " + data[i].time.split("min")[0] + " minutes"}</div>))
-        }
-    
-        ChildrenHospitalInfo().then((response) => {
-                arr.push((
-                    <div key={"0ch"} className="hospital">
-                    {response.hospitals[0].name + ": " + " Wait Times " + response.hospitals[0].time + " minutes"}
-                    </div>))
-                arr.push((
-                    <div key={"1ch"} className="hospital">
-                    {response.hospitals[1].name + ": " + " Wait Times " + response.hospitals[1].time + " minutes"}
-                    </div>))
-                arr.push((
-                    <div key={"2ch"} className="hospital">
-                    {response.hospitals[2].name + ": " + " Wait Times " + response.hospitals[2].time + " minutes"}
-                    </div>))
-
-                return setArray(arr);
-    
+    await ChildrenHospitalInfo().then((response) => {
+        let info = response.hospitals;
+        response.hospitals.map((objects) => {
+            newarr.push(objects);
+        })
+        
     });
-    
-    return newArray;
-    
-    
-    }
 
-    return ( <div className="hospital-container">
-        {HospitalInfo()}
-    </div>)
+    return newarr;
+
 
 }
